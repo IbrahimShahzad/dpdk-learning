@@ -15,6 +15,10 @@
 #define RX_RING_SIZE 128
 #define TX_RING_SIZE 512
 
+int lcore_main(void *arg){
+  return 0;
+}
+
 static inline int
 port_init(u_int8_t port,struct rte_mempool *mbuf_pool){
   struct rte_eth_conf port_conf = {
@@ -124,6 +128,10 @@ int main(int argc, char* argv[]){
     if(port_init(portid,mbuf_pool) != 0)
       rte_exit(EXIT_FAILURE,"port init failed\n");
   }
+
+  rte_eal_mp_remote_launch(lcore_main,NULL,SKIP_MASTER);
+  rte_eal_mp_wait_lcore();
+
   
 
   return 0;
