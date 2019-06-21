@@ -12,12 +12,18 @@
 #define NUM_MBUFS 8191
 #define MBUF_CACHE_SIZE 250
 
+
+port_init(u_int8_t port,struct rte_mempool *mbuf_pool){
+  return 0;
+}
+
 int main(int argc, char* argv[]){
   printf("\n");
 
   int ret;
   u_int8_t nb_ports;
   struct rte_mempool *mbuf_pool;
+  u_int8_t portid;
 
   /*
    * EAL: "Environment Abstraction Layer"
@@ -64,6 +70,13 @@ int main(int argc, char* argv[]){
 
   if (mbuf_pool == NULL)
     rte_exit(EXIT_FAILURE,"mbuff_pool create failed\n");
+
+
+  /* Initialize all ports */
+  for (portid = 0; portid < nb_ports; portid++){
+    if(port_init(portid,mbuf_pool) != 0)
+      rte_exit(EXIT_FAILURE,"port init failed\n");
+  }
   
 
   return 0;
