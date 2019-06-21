@@ -18,6 +18,12 @@
 #define TX_RING_SIZE 512
 
 static u_int8_t forwarding_lcore = 1;
+static u_int8_t mac_swap = 1;
+
+static void
+simple_mac_swap(struct rte_mbuf **bufs,uint16_t nb_mbufs){
+
+}
 
 int lcore_main(void *arg){
   unsigned int lcore_id = rte_lcore_id();
@@ -47,6 +53,9 @@ int lcore_main(void *arg){
           bufs,BURST_SIZE);
       if (unlikely(nb_rx==0))
         continue;
+
+      if (mac_swap)
+        simple_mac_swap(bufs,nb_rx);
 
       /* send burst of Tx packets to the 
        * second port
@@ -173,6 +182,9 @@ int main(int argc, char* argv[]){
     if(port_init(portid,mbuf_pool) != 0)
       rte_exit(EXIT_FAILURE,"port init failed\n");
   }
+
+  if(mac_swap)
+    RTE_LOG(INFO,APP,"MAC address swapping enabledi\n");
 
   rte_eal_mp_remote_launch(lcore_main,NULL,SKIP_MASTER);
   rte_eal_mp_wait_lcore();
