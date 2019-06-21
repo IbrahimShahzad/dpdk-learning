@@ -1,11 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
+#include <stdbool.h>
 
 #include <rte_eal.h>
 #include <rte_common.h>
 #include <rte_ethdev.h>
 #include <rte_log.h>
 #include <rte_mbuf.h>
+
+static volatile bool force_quit;
 
 #define RTE_LOGTYPE_APP RTE_LOGTYPE_USER1
 
@@ -64,7 +68,7 @@ int lcore_main(void *arg){
   }
 
   /* Run until app is killed or quit */
-  for(;;){
+  while(!force_quit){
     /* Receive packets on port
      * and forward them to  a paired port
      * the mapping is 0->1,1->0 , 2-3 
@@ -149,6 +153,14 @@ port_init(u_int8_t port,struct rte_mempool *mbuf_pool){
   return 0;
 }
 
+static void
+signal_handler(int signum){
+  if(signum== SIGINT || signum== SIGTERM){
+    printf("\n\nSignal %d received,preparing to exit...\n",signum);
+    force_quit = true;
+  }
+}
+
 int main(int argc, char* argv[]){
   printf("\n");
 
@@ -180,6 +192,10 @@ int main(int argc, char* argv[]){
   
   argc -= ret;
   argv += ret;
+
+  force_quit = false;
+  signal(SIGINT,signal_handler);
+  signal(SIGTERM,signal_handler);
 
 
   /*
