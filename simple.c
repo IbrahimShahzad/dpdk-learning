@@ -3,11 +3,13 @@
 
 #include <rte_eal.h>
 #include <rte_common.h>
+#include <rte_ethdev.h>
 
 int main(int argc, char* argv[]){
   printf("\n");
 
   int ret;
+  u_int8_t nb_ports;
   /*
    * EAL: "Environment Abstraction Layer"
    * EAL gets parameters from cli, returns number of parsed args
@@ -31,6 +33,16 @@ int main(int argc, char* argv[]){
   
   argc -= ret;
   argv += ret;
+
+
+  /*
+   * Check there is an even number of ports to 
+   * send and receive on
+   */
+  nb_ports = rte_eth_dev_count();
+  if(nb_ports < 2 || (nb_ports & 1)){
+    rte_exit(EXIT_FAILURE,"Invalid port number\n");
+  }
 
   return 0;
 }
