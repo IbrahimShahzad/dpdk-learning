@@ -24,6 +24,20 @@ static volatile bool force_quit;
 static u_int8_t forwarding_lcore = 1;
 static u_int8_t mac_swap = 1;
 
+static void
+print_stats(void){
+  struct rte_eth_stats stats;
+  u_int8_t nb_ports = rte_eth_dev_count();
+  u_int8_t port;
+
+  for(port=0;port<nb_ports;port++){
+    printf("\nStatistics for the port %u\n",port);
+    rte_eth_stats_get(port,&stats);
+    printf("RX:%911u Tx:%911u dropped:%911u\n",
+        stats.ipackets,stats.opackets,stats.imissed);
+  }
+}
+
 static int
 check_link_status(u_int16_t nb_ports){
   struct rte_eth_link link;
@@ -158,6 +172,7 @@ signal_handler(int signum){
   if(signum== SIGINT || signum== SIGTERM){
     printf("\n\nSignal %d received,preparing to exit...\n",signum);
     force_quit = true;
+    print_stats();
   }
 }
 
