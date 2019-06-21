@@ -23,30 +23,43 @@ int lcore_main(void *arg){
   unsigned int lcore_id = rte_lcore_id();
   const u_int8_t nb_ports = rte_eth_dev_count();
   u_int8_t port;
+  u_int8_t dest_port;
+
   if (lcore_id != forwarding_lcore){
-    RTE_LOC(INFO,APP,"lcore %u exiting\n"lcore_id);
-    return 0
+    RTE_LOG(INFO,APP,"lcore %u exiting\n",lcore_id);
+    return 0;
   }
 
   /* Run until app is killed or quit */
   for(;;){
-    /* Receive packets on port */
+    /* Receive packets on port
+     * and forward them to  a paired port
+     * the mapping is 0->1,1->0 , 2-3 
+     * */
     for(port=0;port< nb_ports;port++){
       struct rte_mbuf *bufs[BURST_SIZE];
       u_int16_t nb_rx;
+      u_int16_t nb_tx;
       u_int16_t buf;
 
       /* Get burst fo RX packets */
-      nb_rx = rte_eth_burst(port,0,
+      nb_rx = rte_eth_rx_burst(port,0,
           bufs,BURST_SIZE);
       if (unlikely(nb_rx==0))
         continue;
 
+      /* send burst of Tx packets to the 
+       * second port
+       */
+      dest_port = port ^ 1;
+      nb_tx= rte_eth_tx_burst(dest_port, 0,
+          bufs, nb_rx);
       /* Free any unsent packets. */
-      for (buf=0;buf<nb_rx;buf++)
-        rte_pktmbuf_free(bufs[buf]);
-
-    }
+      if(unlikely(nb_rx < nb_rx)){
+        for (buf=0;buf<nb_rx;buf++)
+          rte_pktmbuf_free(bufs[buf]);
+        }
+      }
   }
   return 0;
 }
