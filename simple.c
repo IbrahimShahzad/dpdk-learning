@@ -4,12 +4,16 @@
 #include <rte_eal.h>
 #include <rte_common.h>
 #include <rte_ethdev.h>
+#include <rte_log.h>
+
+#define RTE_LOGTYPE_APP RTE_LOGTYPE_USER1
 
 int main(int argc, char* argv[]){
   printf("\n");
 
   int ret;
   u_int8_t nb_ports;
+
   /*
    * EAL: "Environment Abstraction Layer"
    * EAL gets parameters from cli, returns number of parsed args
@@ -43,6 +47,8 @@ int main(int argc, char* argv[]){
   if(nb_ports < 2 || (nb_ports & 1)){
     rte_exit(EXIT_FAILURE,"Invalid port number\n");
   }
+
+  RTE_LOG(INFO, APP, "Number of ports:%u\n",nb_ports);
 
   return 0;
 }
