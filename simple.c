@@ -14,6 +14,21 @@
 
 
 port_init(u_int8_t port,struct rte_mempool *mbuf_pool){
+  struct rte_eth_conf port_conf = {
+    .rxmode = { .max_rx_pkt_len = ETHER_MAX_LEN }
+  };
+  const u_int16_t nb_rx_queues = 1;
+  const u_int16_t nb_tx_queues = 1;
+  int ret;
+
+  /* configure the ethernet device */
+  ret = rte_eth_dev_configure(port,
+      nb_rx_queues,
+      nb_tx_queues,
+      &port_conf);
+  if (ret != 0)
+    return ret;
+
   return 0;
 }
 
