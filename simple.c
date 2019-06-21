@@ -35,7 +35,7 @@ port_init(u_int8_t port,struct rte_mempool *mbuf_pool){
 
   /* Allocate and setup 1 RX queue per Ethernet port */
   for (q=0;q<nb_rx_queues;q++){
-    ret=rte_eth_queue_setup(port,q,RX_RING_SIZE,
+    ret=rte_eth_rx_queue_setup(port,q,RX_RING_SIZE,
         rte_eth_dev_socket_id(port),
         NULL, mbuf_pool);
     if (ret<0)
@@ -55,6 +55,11 @@ port_init(u_int8_t port,struct rte_mempool *mbuf_pool){
   ret = rte_eth_dev_start(port);
   if (ret<0)
     return ret;
+
+
+  /* Enable RX in promiscuous mode for the Ethernet device */
+  rte_eth_promiscuous_enable(port);
+
 
   return 0;
 }
