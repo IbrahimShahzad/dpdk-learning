@@ -20,6 +20,21 @@
 static u_int8_t forwarding_lcore = 1;
 static u_int8_t mac_swap = 1;
 
+static int
+check_link_status(u_int16_t nb_ports){
+  struct rte_eth_link link;
+  u_int8_t port;
+  for (port=0;port<nb_ports;port++){
+    rte_eth_link_get(port,&link);
+    if(link.link_status == ETH_LINK_DOWN){
+      RTE_LOG(INFO,APP,"Port: %u Link DOWN\n",port);
+      return -1;
+    }
+    RTE_LOG(INFO,APP,"Port: %u Link UP Speed %u\n",
+        port,link.link_speed);
+  }
+}
+
 static void
 simple_mac_swap(struct rte_mbuf **bufs,uint16_t nb_mbufs){
   struct ether_hdr *eth;
@@ -198,6 +213,10 @@ int main(int argc, char* argv[]){
   if(mac_swap)
     RTE_LOG(INFO,APP,"MAC address swapping enabledi\n");
 
+  ret=check_link_status(nb_ports);
+  if (ret<0){
+    RTE_LOG(WARNING,APP,"Some ports are down\n");
+  }
   rte_eal_mp_remote_launch(lcore_main,NULL,SKIP_MASTER);
   rte_eal_mp_wait_lcore();
 
