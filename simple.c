@@ -27,7 +27,7 @@ static u_int8_t mac_swap = 1;
 static void
 print_stats(void){
   struct rte_eth_stats stats;
-  u_int8_t nb_ports = rte_eth_dev_count();
+  u_int8_t nb_ports = rte_eth_dev_count_avail();
   u_int8_t port;
 
   for(port=0;port<nb_ports;port++){
@@ -53,26 +53,11 @@ check_link_status(u_int16_t nb_ports){
   }
 }
 
-static void
-simple_mac_swap(struct rte_mbuf **bufs,uint16_t nb_mbufs){
-  struct ether_hdr *eth;
-  struct ether_addr tmp;
-  struct rte_mbuf *m;
-  u_int16_t buf;
 
-  for (buf=0;buf<nb_mbufs;buf++){
-    m = bufs[buf];
-    eth = rte_pktmbuf_mtod(m,struct ether_hdr *);
-    ether_addr_copy(&eth->s_addr,&tmp);
-    ether_addr_copy(&eth->d_addr,&eth->s_addr);
-    ether_addr_copy(&tmp,&eth->d_addr);
-  }
-
-}
 
 int lcore_main(void *arg){
   unsigned int lcore_id = rte_lcore_id();
-  const u_int8_t nb_ports = rte_eth_dev_count();
+  const u_int8_t nb_ports = rte_eth_dev_count_avail();
   u_int8_t port;
   u_int8_t dest_port;
 
@@ -85,7 +70,7 @@ int lcore_main(void *arg){
   while(!force_quit){
     /* Receive packets on port
      * and forward them to  a paired port
-     * the mapping is 0->1,1->0 , 2-3 
+     * the mapping is 0->1,1->0 , 2-3
      * */
     for(port=0;port< nb_ports;port++){
       struct rte_mbuf *bufs[BURST_SIZE];
@@ -99,10 +84,8 @@ int lcore_main(void *arg){
       if (unlikely(nb_rx==0))
         continue;
 
-      if (mac_swap)
-        simple_mac_swap(bufs,nb_rx);
-
-      /* send burst of Tx packets to the 
+      /* send burst of Tx packets to the
+       *
        * second port
        */
       dest_port = port ^ 1;
@@ -121,7 +104,7 @@ int lcore_main(void *arg){
 static inline int
 port_init(u_int8_t port,struct rte_mempool *mbuf_pool){
   struct rte_eth_conf port_conf = {
-    .rxmode = { .max_rx_pkt_len = ETHER_MAX_LEN }
+    .rxmode = { .max_rx_pkt_len = RTE_ETHER_MAX_LEN }
   };
   const u_int16_t nb_rx_queues = 1;
   const u_int16_t nb_tx_queues = 1;
@@ -204,7 +187,7 @@ int main(int argc, char* argv[]){
   ret = rte_eal_init(argc,argv);
   if (ret<0)
     rte_exit(EXIT_FAILURE,"EAL Init failed\n");
-  
+
   argc -= ret;
   argv += ret;
 
@@ -214,10 +197,10 @@ int main(int argc, char* argv[]){
 
 
   /*
-   * Check there is an even number of ports to 
+   * Check there is an even number of ports to
    * send and receive on
    */
-  nb_ports = rte_eth_dev_count();
+  nb_ports = rte_eth_dev_count_avail();
   if(nb_ports < 2 || (nb_ports & 1)){
     rte_exit(EXIT_FAILURE,"Invalid port number\n");
   }
@@ -248,10 +231,10 @@ int main(int argc, char* argv[]){
   if (ret<0){
     RTE_LOG(WARNING,APP,"Some ports are down\n");
   }
-  rte_eal_mp_remote_launch(lcore_main,NULL,SKIP_MASTER);
+  rte_eal_mp_remote_launch(lcore_main,NULL,SKIP_MAIN);
   rte_eal_mp_wait_lcore();
 
-  
+
 
   return 0;
 }
