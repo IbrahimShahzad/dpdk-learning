@@ -21,7 +21,7 @@
 ## Whats happening inside
 
   
-![design](docs/test.png)
+![design](docs/design2.png)
 
   
 ## Requirements
