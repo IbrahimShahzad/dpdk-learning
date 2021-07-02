@@ -161,11 +161,12 @@ int worker_main(void *arg){
 			  rte_memcpy(destination_mac_address,&ethernet_header->d_addr,sizeof(u_int8_t)*RTE_ETHER_ADDR_LEN);
 			  RTE_LOG(INFO,APP,"\nSource Mac: ");
 			  for(int i=0;i<RTE_ETHER_ADDR_LEN;i++)
-				  RTE_LOG(INFO,APP,"%x",source_mac_address[i]);
+				  printf("%x ",source_mac_address[i]);
+			  printf("\n");
 			  RTE_LOG(INFO,APP,"\nDestination Mac: ");
 			  for(int i=0;i<RTE_ETHER_ADDR_LEN;i++)
-				  RTE_LOG(INFO,APP,"%x",source_mac_address[i]);
-			  RTE_LOG(INFO,APP,"\n");
+				  printf("%x ",source_mac_address[i]);
+			  printf("\n");
 			  RTE_LOG(INFO,APP,"ether type: %d",ethernet_type);
 			  void* pHdrTraverse = (void*) ((unsigned char*) ethernet_header + sizeof (struct rte_ether_hdr));// Pointer to Next Layer to Eth
 			  u_int16_t next_proto = get_Ether_Type(pHdrTraverse);// holds last two byte value of ETH Layer
