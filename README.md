@@ -18,6 +18,12 @@
    -  [Receive and Transmit Packets](https://ibrahimshahzad.github.io/blog/dpdk_02/)
    -  [Parse the packet headers](https://ibrahimshahzad.github.io/blog/dpdk_03/) 
 
+## Whats happening inside
+
+  
+![design](docs/test.png)
+
+  
 ## Requirements
 
 - A linux based system:
