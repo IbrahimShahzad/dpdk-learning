@@ -13,10 +13,10 @@
   -  Transport Layer   
       -  Source Port
       -  Destination Port
--  Follow Along [here](https://ibrahimshahzad.github.io/blog) 
-   -  [Setting up DPDK](https://ibrahimshahzad.github.io/blog/Writing_your_first_dpdk_app/)
-   -  [Receive and Transmit Packets](https://ibrahimshahzad.github.io/blog/dpdk_02/)
-   -  [Parse the packet headers](https://ibrahimshahzad.github.io/blog/dpdk_03/) 
+-  Follow Along [here](https://ibrahimshahzad.github.io/) 
+   -  [Setting up DPDK](https://ibrahimshahzad.github.io/posts/dpdk_01/)
+   -  [Receive and Transmit Packets](https://ibrahimshahzad.github.io/posts/dpdk_02/)
+   -  [Parse the packet headers](https://ibrahimshahzad.github.io/posts/dpdk_03/) 
 
 ## Whats happening inside
 
@@ -35,8 +35,8 @@
 
 First,
 - make sure you have DPDK installed
-- make sure `hugepages` are setup. ([help!](https://ibrahimshahzad.github.io/blog/Writing_your_first_dpdk_app/))
-- make sure NIC(s) are binded to `igb_uio` driver.  ([help!](https://ibrahimshahzad.github.io/blog/Writing_your_first_dpdk_app/))
+- make sure `hugepages` are setup. ([help!](https://ibrahimshahzad.github.io/posts/dpdk_01/))
+- make sure NIC(s) are binded to `igb_uio` driver.  ([help!](https://ibrahimshahzad.github.io/posts/dpdk_01/))
 
 Now
 - Clone this repo
@@ -53,4 +53,4 @@ make
 ./build/my_app -l 0-3 -n 3 -- -p 0x3
 ```
 
-> If you are having trouble, see [here](https://ibrahimshahzad.github.io/blog/Writing_your_first_dpdk_app/)
+> If you are having trouble, see [here](https://ibrahimshahzad.github.io/posts/dpdk_01/)
